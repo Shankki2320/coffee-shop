@@ -6,3 +6,4 @@
 - All standards followed during design and implementation of the APIs
 - Created only one microservice as per the requirement specified
 - Also, I did not find any specific use case for implementing event driven architecture as the number of APIs is constrained to 2-3 for skills demonstration
+
