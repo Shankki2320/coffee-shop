@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -45,11 +46,12 @@ public class UserServiceImpl implements UserService {
         //check for existing user
         Optional<User> user = userRepository.findByEmailId(userDTO.getEmailId());
         if (user.isPresent()) {
+            log.error("User with given mail id already exist.");
             throw new ResourceAlreadyExistException("User with email already exists, please login to proceed further");
         }
         User userDetails = new User();
         BeanUtils.copyProperties(userDTO, userDetails);
-        setUserRoles(userDTO, userDetails);
+        userDetails.setRoles(setUserRoles(userDTO.getRoles()));
         User userId = userRepository.save(userDetails);
         baseResponse.setData("UserId : " + userId.getId());
         baseResponse.setMessage("User registered successfully");
@@ -57,9 +59,9 @@ public class UserServiceImpl implements UserService {
         return new ResponseEntity<>(baseResponse, HttpStatus.CREATED);
     }
 
-    private Set<Role> setUserRoles(UserDTO userDTO, User userDetails) {
+    private Set<Role> setUserRoles(List<String> requestRoles) {
         Set<Role> roles = new HashSet<>();
-        for (String role : userDTO.getRoles()) {
+        for (String role : requestRoles) {
             Role userRole = new Role();
             userRole.setRole(role);
             roles.add(userRole);
